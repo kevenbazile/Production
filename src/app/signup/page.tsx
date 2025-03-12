@@ -1,16 +1,69 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function Agents() {
+export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Sign up with:", email, password);
+    setLoading(true);
+    setError("");
+    setSuccessMessage("");
+
+    try {
+      console.log("🔍 Attempting signup for:", email);
+
+      // ✅ Step 1: Sign up user in Supabase Auth
+      const { data, error } = await supabase.auth.signUp({ email, password });
+
+      if (error) {
+        console.error("❌ Signup Error:", error.message);
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+
+      if (!data.user) {
+        setError("Signup failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      console.log("✅ Signup Successful:", data);
+
+      // ✅ Step 2: Insert user into `users` table (if not already inserted)
+      const { error: dbError } = await supabase
+        .from("users")
+        .insert([{ id: data.user.id, email, password, role: "spotlight" }]);
+
+      if (dbError) {
+        console.error("❌ Database Insert Error:", dbError.message);
+        setError("Could not save user data.");
+        setLoading(false);
+        return;
+      }
+
+      console.log("✅ User saved to database");
+
+      // ✅ Step 3: Inform user to check email instead of redirecting
+      setSuccessMessage("Signup successful! Please check your email to verify your account.");
+
+    } catch (err) {
+      console.error("❌ Unexpected Error:", err);
+      setError("An unexpected error occurred.");
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -65,12 +118,19 @@ export default function Agents() {
             </div>
           </div>
 
+          {/* Show error messages if any */}
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+          {/* Show success message if signup is successful */}
+          {successMessage && <p className="text-green-500 text-sm mt-2">{successMessage}</p>}
+
           <div>
             <Button
               type="submit"
+              disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
-              Sign up
+              {loading ? "Signing up..." : "Sign up"}
             </Button>
           </div>
         </form>

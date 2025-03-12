@@ -222,7 +222,7 @@ export default function FilmHubPage() {
         padding: "1rem",
       }}
     >
-      {/* UPDATED NAV BAR */}
+      {/* NAV BAR */}
       <header
         style={{
           display: "flex",
@@ -231,7 +231,7 @@ export default function FilmHubPage() {
           marginBottom: "1rem",
         }}
       >
-        {/* Left side nav links - UPDATED with new navigation items */}
+        {/* Left side nav links */}
         <nav style={{ display: "flex", gap: "1rem" }}>
           <Link href="/userhome" style={{ color: "#fff", textDecoration: "none" }}>
             Home
@@ -239,20 +239,11 @@ export default function FilmHubPage() {
           <Link href="/discover" style={{ color: "#fff", textDecoration: "none" }}>
             Discover
           </Link>
-          <Link href="/invest" style={{ color: "#fff", textDecoration: "none" }}>
-            Invest
-          </Link>
-          <Link href="/upgrade" style={{ color: "#fff", textDecoration: "none" }}>
-            Upgrade
-          </Link>
-          <Link href="/referral" style={{ color: "#fff", textDecoration: "none" }}>
-            Referral
-          </Link>
-          <Link href="/feedback" style={{ color: "#fff", textDecoration: "none" }}>
-            Feedback
+          <Link href="/settings" style={{ color: "#fff", textDecoration: "none" }}>
+            Settings
           </Link>
         </nav>
-        {/* Sign Out button - renamed to "Signout" */}
+        {/* Sign Out button as a link */}
         <Link
           href="/signin"
           style={{
@@ -264,7 +255,7 @@ export default function FilmHubPage() {
             textDecoration: "none",
           }}
         >
-          Signout
+          Sign Out
         </Link>
       </header>
 
